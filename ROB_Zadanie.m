@@ -98,7 +98,7 @@ function updateEndpoints(~, ~, slider1, slider2, slider3,L_1,L_2,L_3,button1,but
     end
 
     if (get(button3,'Value') == 1)
-        plotHorizontal();
+        plotHorizontal(L_1,L_2,L_3);
     end
 
     hold off;
@@ -172,7 +172,7 @@ function plotAxis(x,rot_y1,rot_y2,rot_z)
 end
 
 function plotVertical(L_1,L_2,L_3)
-    Phi_1 = 90;
+    Phi_1 = 0;
     Phi_2 = -50:1:130;
     Phi_3 = -30:1:60;
 
@@ -226,7 +226,40 @@ function plotVertical(L_1,L_2,L_3)
     end
 
     % Plot the points using scatter3
-    scatter3(x_points, y_points, z_points, 2, 'filled');
+    scatter3(x_points, y_points, z_points, 2.5, 'k','filled');
+end
+
+function plotHorizontal(L_1,L_2,L_3)
+    Phi_1 = -160:1:160;
+    Phi_2 = -50:10:130;
+    Phi_3 = -30:10:60;
+
+    counter = 1;
+    tolerance = 0.00001;
+
+    for i = 1:length(Phi_1)
+        for j = 1:length(Phi_2)
+            for k = 1:length(Phi_3)
+                [~, ~, ~, point4, ~, ~, ~] = matrixMult(deg2rad(90 - Phi_1(i)), deg2rad(Phi_2(j)), deg2rad(Phi_3(k)), L_1, L_2, L_3);
+                x_points(counter) = point4(1);
+                y_points(counter) = point4(2);
+                z_points(counter) = L_1;
+                % Check if the norm of [x_points(counter), y_points(counter)] is within the tolerance range
+                if (abs(norm([x_points(counter), y_points(counter)]) - (L_2+L_3)) <= tolerance) || (i >= 141 && i <= 181 && j == 1 && k == 1) || ((i == 1 || i == 321) && j == 14)
+                    counter = counter + 1;
+                else
+                    x_points(counter) = 0;
+                    y_points(counter) = 0;
+                    z_points(counter) = 0;
+                end
+            end
+        end
+    end
+
+
+    % Plot the points using scatter3
+    scatter3(x_points, y_points, z_points, 2.5, 'k','filled');
+        
 end
 
 function [O,A,B,C,Rz_1,Ry_2,Ry_3] = matrixMult(Phi_1, Phi_2, Phi_3, L_1, L_2, L_3)
