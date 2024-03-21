@@ -1,4 +1,3 @@
-%%
 clear;
 clc;
 close all;
@@ -18,6 +17,11 @@ button_odsad_vert = 17*odsad_vert;
 slider_vyska = 0.08;
 slider_sirka = (1 - 2*odsad_hor);
 
+
+Azimut = 45;
+Elevation = 45;
+
+
 % ------dlzky_ramien--------
 L_1 = 3.00;
 L_2 = 3.00;
@@ -25,17 +29,23 @@ L_3 = 2.00;
 
 % ----rozmedzia_stupnov-----
 Phi_1 = 0;
-Phi_2 = 40;
-Phi_3 = 15;
+Phi_2 = 0;
+Phi_3 = 0;
 
 % -----------stav-----------
 O = [0;0;0;1];
-A = [0;0;3;1];
-B = [0;1.92;5.29;1];
-C = [0;3.56;6.44;1];
+A = [0;0;L_1;1];
+B = [0;0;(L_1 + L_2);1];
+C = [0;0;(L_1 + L_2 + L_3);1];
 
 f = figure('Name','Zadanie_1_Matula','NumberTitle','off');
 p = uipanel(f,'Position',[0.0125, 0.0125, 0.45, 0.975]);
+
+label_azimut = uicontrol(p,'style', 'text', 'String', 'Rotacia','Units', 'normalized', 'Position', [(posun_hor + odsad_hor/8), 0.815, (0.16 - odsad_hor/4), popis_vyska]);
+azimut_slider = uicontrol(p,'style', 'slider', 'Min', 0, 'Max', 360, 'Value', Azimut, 'Units', 'normalized', 'Position', [odsad_hor, (0.7 + odsad_vert), slider_sirka, slider_vyska]);
+
+label_elevation = uicontrol(p,'style', 'text', 'String', 'Naklon','Units', 'normalized', 'Position', [(posun_hor + odsad_hor/8), 0.955, (0.16 - odsad_hor/4), popis_vyska]);
+elevation_slider = uicontrol(p,'style', 'slider', 'Min', 0, 'Max', 90, 'Value', Elevation, 'Units', 'normalized', 'Position', [odsad_hor, (0.83 + odsad_vert), slider_sirka, slider_vyska]);
 
 label_axes = uicontrol(p,'style', 'text', 'String', 'Axes','Units', 'normalized', 'Position', [odsad_hor, button_odsad_vert, button_popis_sirka, popis_vyska]);
 osi_button = uicontrol(p,'style','checkbox','Units', 'normalized','Position',[( odsad_hor + button_popis_sirka), button_odsad_vert, button_sirka, button_vyska]);
@@ -55,22 +65,25 @@ slider2 = uicontrol(p,'style', 'slider', 'Min', -50, 'Max', 130, 'Value', Phi_2,
 label3 = uicontrol(p,'style', 'text', 'String', 'Phi 3','Units', 'normalized', 'Position', [(posun_hor + odsad_hor), 0.375, (0.16 - 2*odsad_hor), popis_vyska]);
 slider3 = uicontrol(p,'style', 'slider', 'Min', -30, 'Max', 60, 'Value', Phi_3, 'Units', 'normalized', 'Position', [odsad_hor, (0.26 + odsad_vert), slider_sirka, slider_vyska]);
 
-set(osi_button, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button});
-set(max_vertical_button, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button});
-set(max_horizontal_button, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button});
+set(azimut_slider, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
+set(elevation_slider, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
 
-set(slider1,'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button});
-set(slider2, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button});
-set(slider3, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button});
+set(osi_button, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
+set(max_vertical_button, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
+set(max_horizontal_button, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
+
+set(slider1,'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
+set(slider2, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
+set(slider3, 'Callback', {@updateEndpoints, slider1, slider2, slider3,L_1,L_2,L_3,osi_button,max_vertical_button,max_horizontal_button,azimut_slider,elevation_slider});
 
 subplot(1,2,2);
 plotLine(O, A, B, C);
 hold on;
 fill3([-10 -10 10 10], [-10 10 10 -10 ], [0 0 0 0],[1, 1, 0.8549], 'FaceAlpha', 0.5);
 hold off;
-view(45,45)
+view(Azimut,Elevation)
 
-function updateEndpoints(~, ~, slider1, slider2, slider3,L_1,L_2,L_3,button1,button2,button3)
+function updateEndpoints(~, ~, slider1, slider2, slider3,L_1,L_2,L_3,button1,button2,button3,Azimut,Elevation)
     
     Phi_1 = deg2rad(90 - get(slider1, 'Value'));
     Phi_2 = deg2rad(get(slider2, 'Value'));
@@ -102,7 +115,7 @@ function updateEndpoints(~, ~, slider1, slider2, slider3,L_1,L_2,L_3,button1,but
     end
 
     hold off;
-    view(45,45)
+    view((get(Azimut, 'Value')),(get(Elevation, 'Value')))
 end
 
 function plotLine(point1, point2, point3,point4)
@@ -122,13 +135,13 @@ function plotLine(point1, point2, point3,point4)
 
     plot3(X, Y, Z,'-o', 'LineWidth',5,'Color','#FF9933','MarkerSize',5,'MarkerEdgeColor','#000000');
     grid on;
-    xlabel('X-axis');
+    xlabel('X');
     xlim([-10 , 10]);
-    ylabel('Y-axis');
+    ylabel('Y');
     ylim([-10 , 10]);
-    zlabel('Z-axis');
+    zlabel('Z');
     zlim([-2 , 10]);
-    title('3D Robot Arm Vizualizer');
+    title('3D Vizualizer robota');
 end
 
 function plotAxes(O,A,B,C,Rz_1,Ry_2,Ry_3)
@@ -173,8 +186,8 @@ end
 
 function plotVertical(L_1,L_2,L_3)
     Phi_1 = 0;
-    Phi_2 = -50:1:130;
-    Phi_3 = -30:1:60;
+    Phi_2 = -50:5:130;
+    Phi_3 = -30:10:60;
 
     % Preallocate arrays to store coordinates of point4
     counter = 1;
@@ -184,7 +197,7 @@ function plotVertical(L_1,L_2,L_3)
     for j = 1:length(Phi_2)
         if j == 1
             for k = 1:length(Phi_3)
-                if k <= 31 || k >= 61
+                if k <= ceil((1/3)*length(Phi_3)) || k >= ceil((2/3)*length(Phi_3))
                     [~, ~, ~, point4, ~, ~, ~] = matrixMult(deg2rad(90 - Phi_1), deg2rad(Phi_2(j)), deg2rad(Phi_3(k)), L_1, L_2, L_3);
                     x_points(counter) = point4(1);
                     y_points(counter) = point4(2);
@@ -194,7 +207,7 @@ function plotVertical(L_1,L_2,L_3)
             end
         end
     
-        if j <= 24
+        if j <= ceil((23/180)*length(Phi_2))
             [~, ~, ~, point4, ~, ~, ~] = matrixMult(deg2rad(90 - Phi_1), deg2rad(Phi_2(j)), deg2rad(-30), L_1, L_2, L_3);
             x_points(counter) = point4(1);
             y_points(counter) = point4(2);
@@ -203,7 +216,7 @@ function plotVertical(L_1,L_2,L_3)
         end
 
         for k = 1:length(Phi_3)
-            if k == 31 || k == 91
+            if k == ceil((1/3)*length(Phi_3)) || k == length(Phi_3)
                 [~, ~, ~, point4, ~, ~, ~] = matrixMult(deg2rad(90 - Phi_1), deg2rad(Phi_2(j)), deg2rad(Phi_3(k)), L_1, L_2, L_3);
                 x_points(counter) = point4(1);
                 y_points(counter) = point4(2);
@@ -212,9 +225,9 @@ function plotVertical(L_1,L_2,L_3)
             end
         end
 
-        if j == 181
+        if j == length(Phi_2)
             for k = 1:length(Phi_3)
-                if 27 <= k
+                if ceil((13/45)*length(Phi_3)) <= k
                     [~, ~, ~, point4, ~, ~, ~] = matrixMult(deg2rad(90 - Phi_1), deg2rad(Phi_2(j)), deg2rad(Phi_3(k)), L_1, L_2, L_3);
                     x_points(counter) = point4(1);
                     y_points(counter) = point4(2);
@@ -230,8 +243,8 @@ function plotVertical(L_1,L_2,L_3)
 end
 
 function plotHorizontal(L_1,L_2,L_3)
-    Phi_1 = -160:1:160;
-    Phi_2 = -50:10:130;
+    Phi_1 = -160:5:160;
+    Phi_2 = -50:5:130;
     Phi_3 = -30:10:60;
 
     counter = 1;
@@ -245,7 +258,7 @@ function plotHorizontal(L_1,L_2,L_3)
                 y_points(counter) = point4(2);
                 z_points(counter) = L_1;
                 % Check if the norm of [x_points(counter), y_points(counter)] is within the tolerance range
-                if (abs(norm([x_points(counter), y_points(counter)]) - (L_2+L_3)) <= tolerance) || (i >= 141 && i <= 181 && j == 1 && k == 1) || ((i == 1 || i == 321) && j == 14)
+                if (abs(norm([x_points(counter), y_points(counter)]) - (L_2+L_3)) <= tolerance) || ((i >= ceil((7/16)*length(Phi_1)) && i <= ceil((9/16)*length(Phi_1))) && j == 1 && k == 1) || ((i == 1 || i == length(Phi_1)) && j == ceil((13/18)*length(Phi_2)))
                     counter = counter + 1;
                 else
                     x_points(counter) = 0;
